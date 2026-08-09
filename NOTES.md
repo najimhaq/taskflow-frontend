@@ -23,19 +23,21 @@ src/
     └── auth/
         └── auth.schema.ts
 
-DashboardLayout
-├── Sidebar
+Dashboard
+├── Collapsible sidebar
+│   ├── TaskFlow logo
 │   ├── Workspace switcher
 │   ├── Overview
-│   ├── My tasks
+│   ├── My Tasks
 │   ├── Projects
 │   └── Settings
 ├── Topbar
-│   ├── Search
-│   ├── Notification
-│   └── User menu
-└── Dashboard overview
-    ├── Welcome card
-    ├── Task stats
+│   ├── Global search
+│   ├── Notifications
+│   └── User menu with sign out
+└── Main overview
+    ├── Welcome header
+    ├── Task statistics
+    ├── Priority tasks
     ├── Recent projects
-    └── Activity
+    └── Activity panel
