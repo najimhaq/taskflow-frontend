@@ -59,9 +59,8 @@ export function SignUpForm() {
 
     await refetch();
 
-    router.replace('/dashboard');
+    window.location.replace('/dashboard');
   };
-
   return (
     <div className='rounded-2xl border border-border bg-surface/85 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)] backdrop-blur-sm sm:p-8'>
       <div>

@@ -31,8 +31,7 @@ export default function DashboardPage() {
   const handleSignOut = async () => {
     await authClient.signOut();
 
-    router.replace('/sign-in');
-    router.refresh();
+    window.location.replace('/sign-in');
   };
 
   if (isPending) {

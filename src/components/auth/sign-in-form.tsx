@@ -1,3 +1,4 @@
+// src/components/auth/sign-in-form.tsx
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -42,25 +43,25 @@ export function SignInForm() {
     }
   }, [isSessionLoading, router, session]);
 
-  const onSubmit = async (values: SignInInput) => {
-    const { error } = await authClient.signIn.email({
-      email: values.email,
-      password: values.password,
-      rememberMe: values.rememberMe,
-    });
+ const onSubmit = async (values: SignInInput) => {
+   const { error } = await authClient.signIn.email({
+     email: values.email,
+     password: values.password,
+     rememberMe: values.rememberMe,
+   });
 
-    if (error) {
-      setError('root', {
-        message: error.message ?? 'Invalid email or password.',
-      });
+   if (error) {
+     setError('root', {
+       message: error.message ?? 'Invalid email or password.',
+     });
 
-      return;
-    }
+     return;
+   }
 
-    await refetch();
+   await refetch();
 
-    router.replace('/dashboard');
-  };
+   window.location.replace('/dashboard');
+ };
 
   return (
     <div className='rounded-2xl border border-border bg-surface/85 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)] backdrop-blur-sm sm:p-8'>
