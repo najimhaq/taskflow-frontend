@@ -1,3 +1,4 @@
+// src/components/lenis/back-to-top.tsx
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
