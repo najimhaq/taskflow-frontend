@@ -9,6 +9,7 @@ import {
   CircleCheckBig,
   FolderKanban,
   LayoutDashboard,
+  LoaderCircle,
   Plus,
   Settings,
   UsersRound,
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 
 import { Logo } from '@/components/shared/logo';
+import { useWorkspace } from '@/features/workspace/workspace-provider';
 import { cn } from '@/lib/utils';
 
 type NavigationItem = {
@@ -63,6 +65,11 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   const pathname = usePathname();
 
+  const { currentMembership, errorMessage, isLoading } = useWorkspace();
+
+  const workspace = currentMembership?.workspace;
+  const workspaceInitial = workspace?.name.charAt(0).toUpperCase() ?? 'T';
+
   return (
     <>
       {isMobileOpen ? (
@@ -94,27 +101,56 @@ export function DashboardSidebar({
         </div>
 
         <div className='px-4'>
-          <button
-            type='button'
-            disabled
-            title='Workspace switcher will be available soon'
-            className='flex w-full items-center gap-3 rounded-xl border border-border bg-surface p-3 text-left opacity-80'
-          >
-            <span className='grid size-9 place-items-center rounded-lg bg-[rgba(109,93,251,0.18)] text-sm font-bold text-[#B6AFFF]'>
-              T
-            </span>
-
-            <span className='min-w-0 flex-1'>
-              <span className='block truncate text-sm font-bold text-text-primary'>
-                My workspace
+          {isLoading ? (
+            <div className='flex h-[66px] items-center gap-3 rounded-xl border border-border bg-surface p-3'>
+              <span className='grid size-9 place-items-center rounded-lg bg-surface-elevated'>
+                <LoaderCircle className='size-4 animate-spin text-accent' />
               </span>
-              <span className='mt-0.5 block text-xs text-text-muted'>
-                Personal workspace
-              </span>
-            </span>
 
-            <ChevronDown className='size-4 text-text-muted' />
-          </button>
+              <div className='flex-1 space-y-2'>
+                <div className='h-3 w-28 animate-pulse rounded bg-surface-elevated' />
+                <div className='h-2.5 w-20 animate-pulse rounded bg-surface-elevated' />
+              </div>
+            </div>
+          ) : workspace ? (
+            <button
+              type='button'
+              title='Workspace switching will be available soon'
+              className='flex w-full items-center gap-3 rounded-xl border border-border bg-surface p-3 text-left transition-colors hover:bg-surface-elevated'
+            >
+              <span className='grid size-9 place-items-center rounded-lg bg-[rgba(109,93,251,0.18)] text-sm font-bold text-[#B6AFFF]'>
+                {workspaceInitial}
+              </span>
+
+              <span className='min-w-0 flex-1'>
+                <span className='block truncate text-sm font-bold text-text-primary'>
+                  {workspace.name}
+                </span>
+
+                <span className='mt-0.5 block text-xs text-text-muted'>
+                  {currentMembership.role.charAt(0)}
+                  {currentMembership.role.slice(1).toLowerCase()} workspace
+                </span>
+              </span>
+
+              <ChevronDown className='size-4 text-text-muted' />
+            </button>
+          ) : (
+            <Link
+              href='/onboarding/create-workspace'
+              onClick={onClose}
+              className='flex min-h-[66px] items-center gap-3 rounded-xl border border-dashed border-[rgba(129,117,255,0.4)] bg-[rgba(109,93,251,0.08)] p-3 text-sm font-bold text-[#B6AFFF] transition-colors hover:bg-[rgba(109,93,251,0.14)]'
+            >
+              <Plus className='size-5' />
+              Create your first workspace
+            </Link>
+          )}
+
+          {errorMessage ? (
+            <p className='mt-2 text-xs font-medium text-danger'>
+              {errorMessage}
+            </p>
+          ) : null}
         </div>
 
         <nav className='mt-7 flex-1 px-4'>
@@ -167,15 +203,14 @@ export function DashboardSidebar({
         </nav>
 
         <div className='border-t border-border p-4'>
-          <button
-            type='button'
-            disabled
-            title='Workspace creation will be available soon'
+          <Link
+            href='/onboarding/create-workspace'
+            onClick={onClose}
             className='flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[rgba(129,117,255,0.35)] px-3 py-2.5 text-sm font-bold text-[#B6AFFF] transition-colors hover:bg-[rgba(109,93,251,0.1)]'
           >
             <Plus className='size-4' />
             New workspace
-          </button>
+          </Link>
 
           <button
             type='button'

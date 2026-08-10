@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 
 import { authClient } from '@/lib/auth-client';
+import { useWorkspace } from '@/features/workspace/workspace-provider';
 
 type DashboardTopbarProps = {
   onOpenSidebar: () => void;
@@ -18,6 +19,11 @@ type DashboardTopbarProps = {
 
 export function DashboardTopbar({ onOpenSidebar }: DashboardTopbarProps) {
   const { data: session } = authClient.useSession();
+  const { currentMembership, isLoading: isWorkspaceLoading } = useWorkspace();
+
+  const workspaceName =
+    currentMembership?.workspace.name ??
+    (isWorkspaceLoading ? 'Loading workspace...' : 'No workspace');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const userName = session?.user.name ?? 'TaskFlow user';
@@ -44,7 +50,10 @@ export function DashboardTopbar({ onOpenSidebar }: DashboardTopbarProps) {
 
         <div>
           <p className='text-xs font-medium text-text-muted'>Workspace</p>
-          <h1 className='text-sm font-bold text-text-primary'>My workspace</h1>
+
+          <h1 className='max-w-44 truncate text-sm font-bold text-text-primary sm:max-w-xs'>
+            {workspaceName}
+          </h1>
         </div>
       </div>
 
