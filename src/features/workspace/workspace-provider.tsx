@@ -18,6 +18,7 @@ type WorkspaceContextValue = {
   currentMembership: WorkspaceMembership | null;
   isLoading: boolean;
   errorMessage: string | null;
+  selectWorkspace: (workspaceId: string) => void;
   refetchWorkspaces: () => Promise<void>;
 };
 
@@ -31,6 +32,9 @@ const WorkspaceContext = createContext<WorkspaceContextValue | undefined>(
 
 export function WorkspaceProvider({ children }: WorkspaceProviderProps) {
   const [memberships, setMemberships] = useState<WorkspaceMembership[]>([]);
+  const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -42,6 +46,18 @@ export function WorkspaceProvider({ children }: WorkspaceProviderProps) {
       const workspaceMemberships = await getMyWorkspaces();
 
       setMemberships(workspaceMemberships);
+
+      setActiveWorkspaceId((currentWorkspaceId) => {
+        const stillExists = workspaceMemberships.some(
+          (membership) => membership.workspace.id === currentWorkspaceId
+        );
+
+        if (currentWorkspaceId && stillExists) {
+          return currentWorkspaceId;
+        }
+
+        return workspaceMemberships[0]?.workspace.id ?? null;
+      });
     } catch (error) {
       console.error('Unable to load workspaces:', error);
 
@@ -55,15 +71,35 @@ export function WorkspaceProvider({ children }: WorkspaceProviderProps) {
     void refetchWorkspaces();
   }, [refetchWorkspaces]);
 
+  const selectWorkspace = useCallback((workspaceId: string) => {
+    setActiveWorkspaceId(workspaceId);
+  }, []);
+
+  const currentMembership = useMemo(() => {
+    return (
+      memberships.find(
+        (membership) => membership.workspace.id === activeWorkspaceId
+      ) ?? null
+    );
+  }, [activeWorkspaceId, memberships]);
+
   const value = useMemo<WorkspaceContextValue>(() => {
     return {
       memberships,
-      currentMembership: memberships[0] ?? null,
+      currentMembership,
       isLoading,
       errorMessage,
+      selectWorkspace,
       refetchWorkspaces,
     };
-  }, [errorMessage, isLoading, memberships, refetchWorkspaces]);
+  }, [
+    currentMembership,
+    errorMessage,
+    isLoading,
+    memberships,
+    refetchWorkspaces,
+    selectWorkspace,
+  ]);
 
   return (
     <WorkspaceContext.Provider value={value}>
